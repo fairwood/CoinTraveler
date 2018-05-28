@@ -30,6 +30,7 @@ export class MainCtrl extends cc.Component {
 
     onLoad() {
         MainCtrl.Instance = this;
+        document.title = "NAS|币圈穿越记";
         //加载历史价格数据
         cc.loader.loadRes('BTC', function (err, txt) {
             console.log('BTCHistory loaded', typeof(txt), txt);

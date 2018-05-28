@@ -33,11 +33,18 @@ export class Core extends cc.Component {
     lblTotal: cc.Label = null;
     @property(cc.Graphics)
     graphics: cc.Graphics = null;
+    @property(cc.Node)
+    lastOper: cc.Node = null;
+    @property(cc.Label)
+    lblLastOper: cc.Label = null;
 
     @property(cc.Label)
     lblSpeed: cc.Label = null;
     @property([cc.Button])
     btnSpeeds: Array<cc.Button> = [];
+
+    lastOperDir: number = null; //1买   2卖
+    lastOperPrice: number = null;
 
     onLoad() {
         let self = this;
@@ -103,6 +110,8 @@ export class Core extends cc.Component {
         let amountOfBTC = Math.min(20000000 - this.btcBalance, this.fiatBalance / price);
         this.btcBalance += amountOfBTC;
         this.fiatBalance -= amountOfBTC * price;
+        this.lastOperDir = 1;
+        this.lastOperPrice = price;
     }
     SellAll() {
         console.log("全仓卖出");
@@ -111,6 +120,8 @@ export class Core extends cc.Component {
         let amountOfBTC = this.btcBalance;
         this.fiatBalance += amountOfBTC * price;
         this.btcBalance -= amountOfBTC;
+        this.lastOperDir = 2;
+        this.lastOperPrice = price;
     }
 
     restart() {
@@ -120,6 +131,9 @@ export class Core extends cc.Component {
         this.nextDayCountdown = 0;
         this.historicalHighestPrice = 0;
         this.graphics.moveTo(0, 0);
+        this.lastOper.active = false;
+        this.lastOperDir = null;
+        this.lastOperPrice = null;
     }
     update(dt: number) {
         let data = MainCtrl.Instance.BTCHistory;
@@ -160,13 +174,21 @@ export class Core extends cc.Component {
             }
 
             this.graphics.stroke();
+
+            if (this.lastOperDir) {
+                this.lastOper.position = new cc.Vec2(0, this.lastOperPrice * factor);
+                this.lblLastOper.string = this.lastOperDir == 1? '最近买入' : '最近卖出';
+                this.lastOper.active = true;
+            } else {
+                this.lastOper.active = false;
+            }
         }
 
         let price = data[this.t].close;
-        
+
         this.lblPrice.string = "￥" + BalanceFormatter.formatCNY(price * Core.USD2CNY);
         this.lblDate.string = data[this.t].date;
-        
+
         this.lblFiatBalance.string = BalanceFormatter.formatCNY(this.fiatBalance * Core.USD2CNY) + "CNY";
         this.lblBtcBalance.string = BalanceFormatter.formatBTC(this.btcBalance) + "BTC";
         let totalAsBtc = this.fiatBalance / price + this.btcBalance;
@@ -178,7 +200,7 @@ export class Core extends cc.Component {
             console.log("End");
             setTimeout(() => {
                 MainCtrl.Instance.GotoResult();
-            }, 1000);
+            }, 100);
         }
     }
 
