@@ -66,6 +66,13 @@ export class MainCtrl extends cc.Component {
         });
         this.LeaderboardUI.active = true;
     }
+    GotoDonate() {
+        this.lastScore = null;
+        this.node.children.forEach((c)=>{
+            c.active = false;
+        });
+        this.UploadUI.active = true;
+    }
     GotoUpload() {
         this.node.children.forEach((c)=>{
             c.active = false;
