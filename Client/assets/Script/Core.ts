@@ -37,6 +37,8 @@ export class Core extends cc.Component {
     lastOper: cc.Node = null;
     @property(cc.Label)
     lblLastOper: cc.Label = null;
+    @property(cc.Node)
+    highestLine: cc.Node = null;
 
     @property(cc.Label)
     lblSpeed: cc.Label = null;
@@ -134,6 +136,7 @@ export class Core extends cc.Component {
         this.lastOper.active = false;
         this.lastOperDir = null;
         this.lastOperPrice = null;
+        this.highestLine.position = new cc.Vec2(0, 0);
     }
     update(dt: number) {
         let data = MainCtrl.Instance.BTCHistory;
@@ -166,7 +169,7 @@ export class Core extends cc.Component {
             this.graphics.lineTo(this.width, 0);
 
             //Line Chart
-            let factor = this.height * 0.9 / this.historicalHighestPrice;
+            let factor = this.height * 0.96 / this.historicalHighestPrice;
             let earliestT = Math.max(0, this.t - this.width / this.dayWidth);
             this.graphics.moveTo(0, data[earliestT].close * factor);
             for (let i = earliestT + 1; i <= this.t; i++) {
@@ -182,6 +185,8 @@ export class Core extends cc.Component {
             } else {
                 this.lastOper.active = false;
             }
+
+            this.highestLine.position = new cc.Vec2(0, this.historicalHighestPrice * factor);
         }
 
         let price = data[this.t].close;
@@ -200,7 +205,7 @@ export class Core extends cc.Component {
             console.log("End");
             setTimeout(() => {
                 MainCtrl.Instance.GotoResult();
-            }, 100);
+            }, 1000);
         }
     }
 
