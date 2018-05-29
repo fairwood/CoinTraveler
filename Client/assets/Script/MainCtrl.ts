@@ -1,22 +1,19 @@
-import { Core } from "./Core";
+import { CoreUI } from "./CoreUI";
 
 const { ccclass, property } = cc._decorator;
 
 declare var Neb: any;
+declare var NebPay: any;
 declare var Account: any;
+declare var HttpRequest: any;
 export const ContractAddress = 'n1xoB2s1S7L7dUU2fniVuchUuFJduKhUYj4';
 
 @ccclass
 export class MainCtrl extends cc.Component {
     static Instance: MainCtrl;
 
+    static BlockchainUrl: string;
     wallet_address: string;
-
-    @property(cc.TextAsset)
-    BTCData: cc.TextAsset = null;
-
-    @property(cc.SpriteFrame)
-    spriteFrame: cc.SpriteFrame = null;
 
     BTCHistory: object[] = null;
 
@@ -37,6 +34,10 @@ export class MainCtrl extends cc.Component {
     onLoad() {
         MainCtrl.Instance = this;
         document.title = "NAS|币圈穿越记";
+        
+        MainCtrl.BlockchainUrl = 'https://testnet.nebulas.io'; //NebPay.config.testnetUrl;这个好像不对啊 //NebPay.config.mainnetUrl
+        console.log('BlockchainUrl', MainCtrl.BlockchainUrl);
+
         //加载历史价格数据
         cc.loader.loadRes('BTC', function (err, txt) {
             console.log('BTCHistory loaded', typeof (txt), txt);
@@ -44,6 +45,7 @@ export class MainCtrl extends cc.Component {
             this.fetchLatestData();
         }.bind(this));
 
+        setInterval(this.loopCheckWallet.bind(this), 1000);
     }
 
     start() {
@@ -53,9 +55,13 @@ export class MainCtrl extends cc.Component {
         });
         this.HomeUI.active = true;
 
+    }
+
+    nebState;
+    loopCheckWallet() {
         let self = this;
         let neb = new Neb();
-        neb.setRequest(new HttpRequest("https://testnet.nebulas.io"));
+        neb.setRequest(new HttpRequest(MainCtrl.BlockchainUrl));
         neb.api.getNebState().then(function (state) {
             self.nebState = state;
 
@@ -69,26 +75,11 @@ export class MainCtrl extends cc.Component {
         });
     }
 
-    nebState;
-    update() {
-    }
-
     getMessage(e) {
         if (e.data && e.data.data) {
-            console.log("e.data.data:", e.data.data)
             if (e.data.data.account) {
                 var address = e.data.data.account;
                 MainCtrl.Instance.wallet_address = address;
-                console.log("address=" + address);
-                // refresh();
-                // nasApi.getAccountState({
-                //     address: address
-                // }).then(function (resp) {
-                //     var amount = Unit.fromBasic(Utils.toBigNumber(resp.balance), "nas").toNumber()//账号余额
-                //     console.log("余额：" + amount);
-                //     this.wallet_balance = amount;
-                //     hui("#wallet_balance").html(amount);
-                // });
             }
         }
 
@@ -99,7 +90,7 @@ export class MainCtrl extends cc.Component {
             c.active = false;
         });
         this.CoreUI.active = true;
-        this.CoreUI.getComponent(Core).restart();
+        this.CoreUI.getComponent(CoreUI).restart();
     }
 
     GotoResult() {
@@ -135,13 +126,11 @@ export class MainCtrl extends cc.Component {
     }
 
     fetchLatestData() {
-
-
         var xhr: XMLHttpRequest = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
                 let response = xhr.responseText;
-                console.log(response);
+                console.log('fetchLatestData', response);
             }
         }
         let history = MainCtrl.Instance.BTCHistory;

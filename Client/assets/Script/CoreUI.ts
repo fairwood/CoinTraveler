@@ -4,7 +4,7 @@ import BalanceFormatter from "./BalanceFormatter";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export class Core extends cc.Component {
+export class CoreUI extends cc.Component {
 
     fiatBalance: number = 0;
     btcBalance: number = 0;
@@ -108,7 +108,7 @@ export class Core extends cc.Component {
     BuyAll() {
         console.log("全仓买入");
         let data = MainCtrl.Instance.BTCHistory;
-        let price = data[this.t].close;
+        let price = data[this.t]['close'];
         let amountOfBTC = Math.min(20000000 - this.btcBalance, this.fiatBalance / price);
         this.btcBalance += amountOfBTC;
         this.fiatBalance -= amountOfBTC * price;
@@ -118,7 +118,7 @@ export class Core extends cc.Component {
     SellAll() {
         console.log("全仓卖出");
         let data = MainCtrl.Instance.BTCHistory;
-        let price = data[this.t].close;
+        let price = data[this.t]['close'];
         let amountOfBTC = this.btcBalance;
         this.fiatBalance += amountOfBTC * price;
         this.btcBalance -= amountOfBTC;
@@ -127,7 +127,7 @@ export class Core extends cc.Component {
     }
 
     restart() {
-        this.fiatBalance = 100 / Core.USD2CNY;
+        this.fiatBalance = 100 / CoreUI.USD2CNY;
         this.btcBalance = 0;
         this.t = 0;
         this.nextDayCountdown = 0;
@@ -153,7 +153,7 @@ export class Core extends cc.Component {
             this.t++;
             // console.log("t", this.t);
             this.nextDayCountdown += this.interval;
-            let price = data[this.t].close;
+            let price = data[this.t]['close'];
             if (price > this.historicalHighestPrice) {
                 this.historicalHighestPrice = price;
             }
@@ -171,9 +171,9 @@ export class Core extends cc.Component {
             //Line Chart
             let factor = this.height * 0.96 / this.historicalHighestPrice;
             let earliestT = Math.max(0, this.t - this.width / this.dayWidth);
-            this.graphics.moveTo(0, data[earliestT].close * factor);
+            this.graphics.moveTo(0, data[earliestT]['close'] * factor);
             for (let i = earliestT + 1; i <= this.t; i++) {
-                this.graphics.lineTo((i - earliestT) * this.dayWidth, data[i].close * factor);
+                this.graphics.lineTo((i - earliestT) * this.dayWidth, data[i]['close'] * factor);
             }
 
             this.graphics.stroke();
@@ -189,15 +189,15 @@ export class Core extends cc.Component {
             this.highestLine.position = new cc.Vec2(0, this.historicalHighestPrice * factor);
         }
 
-        let price = data[this.t].close;
+        let price = data[this.t]['close'];
 
-        this.lblPrice.string = "￥" + BalanceFormatter.formatCNY(price * Core.USD2CNY);
-        this.lblDate.string = data[this.t].date;
+        this.lblPrice.string = "￥" + BalanceFormatter.formatCNY(price * CoreUI.USD2CNY);
+        this.lblDate.string = data[this.t]['date'];
 
-        this.lblFiatBalance.string = BalanceFormatter.formatCNY(this.fiatBalance * Core.USD2CNY) + "CNY";
+        this.lblFiatBalance.string = BalanceFormatter.formatCNY(this.fiatBalance * CoreUI.USD2CNY) + "CNY";
         this.lblBtcBalance.string = BalanceFormatter.formatBTC(this.btcBalance) + "BTC";
         let totalAsBtc = this.fiatBalance / price + this.btcBalance;
-        this.lblTotal.string = BalanceFormatter.formatCNY(totalAsBtc * price * Core.USD2CNY) + "CNY = " + BalanceFormatter.formatBTC(totalAsBtc) + "BTC";
+        this.lblTotal.string = BalanceFormatter.formatCNY(totalAsBtc * price * CoreUI.USD2CNY) + "CNY = " + BalanceFormatter.formatBTC(totalAsBtc) + "BTC";
 
         if (this.t >= (data as Array<any>).length - 1) {
             MainCtrl.Instance.lastScore = totalAsBtc;

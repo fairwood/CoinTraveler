@@ -34,42 +34,45 @@ export default class UploadUI extends cc.Component {
             this.grpNoScore.active = true;
             this.lblSend.string = '发送捐赠';
         }
-        //TODO:没有钱包怎么办
     }
 
     onUploadBtnClick() {
-        try {
-            let score = MainCtrl.Instance.lastScore;
-            let donateAmount = parseFloat(this.edtDonate.string);
-            let comment = this.edtComment.string;
-            console.log("调用钱包", score, donateAmount, comment);
+        if (window.webExtensionWallet) {
+            try {
+                let score = MainCtrl.Instance.lastScore;
+                let donateAmount = parseFloat(this.edtDonate.string);
+                let comment = this.edtComment.string;
+                console.log("调用钱包", score, donateAmount, comment);
 
-            var nebPay = new NebPay();
-            var serialNumber;
-            //var callbackUrl = NebPay.config.mainnetUrl;
-            var callbackUrl = NebPay.config.testnetUrl;
+                var nebPay = new NebPay();
+                var serialNumber;
+                var callbackUrl = MainCtrl.BlockchainUrl;
 
-            var to = ContractAddress;
-            var value = donateAmount;
-            var callFunction = 'submit';
-            var callArgs = '['+score+',"'+comment+'"]';
-            serialNumber = nebPay.call(to, value, callFunction, callArgs, {
-                qrcode: {
-                    showQRCode: true
-                },
-                goods: {
-                    name: "test",
-                    desc: "test goods"
-                },
-                callback:callbackUrl,
-                listener: this.listener  //set listener for extension transaction result
-            });
-        } catch (error) {
-            console.error(error);
+                var to = ContractAddress;
+                var value = donateAmount;
+                var callFunction = 'submit';
+                var callArgs = '[' + score + ',"' + comment + '"]';
+                serialNumber = nebPay.call(to, value, callFunction, callArgs, {
+                    qrcode: {
+                        showQRCode: false
+                    },
+                    goods: {
+                        name: "test",
+                        desc: "test goods"
+                    },
+                    callback: callbackUrl,
+                    listener: this.listener
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            window.open("https://github.com/ChengOrangeJu/WebExtensionWallet");
         }
     }
 
     listener(resp) {
-        console.log("resp: " + JSON.stringify(resp));
+        console.log("submit resp: ", resp);
+        MainCtrl.Instance.GotoHome();
     }
 }

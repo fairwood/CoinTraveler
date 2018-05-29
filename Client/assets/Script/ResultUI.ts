@@ -1,6 +1,6 @@
 import { MainCtrl } from "./MainCtrl";
-import { Core } from "./Core";
 import BalanceFormatter from "./BalanceFormatter";
+import { CoreUI } from "./CoreUI";
 
 const { ccclass, property } = cc._decorator;
 
@@ -17,7 +17,7 @@ export default class ResultUI extends cc.Component {
     start() {
         let btc = MainCtrl.Instance.lastScore;
         this.lblTotalBTC.string = BalanceFormatter.formatBTC(btc) + "BTC";
-        this.lblTotalCNY.string = "=￥" + BalanceFormatter.formatCNY(btc * MainCtrl.Instance.lastPrice * Core.USD2CNY);
+        this.lblTotalCNY.string = "=￥" + BalanceFormatter.formatCNY(btc * MainCtrl.Instance.lastPrice * CoreUI.USD2CNY);
 
         let children = this.node.children;
         let actions = [];

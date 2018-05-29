@@ -17,10 +17,11 @@ export default class Leaderboard extends cc.Component {
 
     tab = 'score';
 
-    static scoreBoard;
-    static donationBoard;
+    static scoreBoard = [{address: '正在获取数据，请稍候……', score: 0, donation: 0, comment: ''}];
+    static donationBoard = [{address: '正在获取数据，请稍候……', score: 0, donation: 0, comment: ''}];
 
     onLoad() {
+        this.setAndRefreshElement('*', this.template, null);
         for (let i = 0; i < Leaderboard.ElementCount; i++) {
             let element = cc.instantiate(this.template);
             this.elements[i] = element;
@@ -32,13 +33,14 @@ export default class Leaderboard extends cc.Component {
 
     onEnable() {
         this.fetchData();
+        this.switchTab(null, 'score');
     }
 
     fetchData() {
         let self = this;
         if (!Neb) return;
         let neb = new Neb();
-        neb.setRequest(new HttpRequest("https://testnet.nebulas.io"));
+        neb.setRequest(new HttpRequest(MainCtrl.BlockchainUrl));
 
         var from = MainCtrl.Instance.wallet_address ? MainCtrl.Instance.wallet_address : Account.NewAccount().getAddressString();
         console.log("from:" + from)
@@ -48,7 +50,6 @@ export default class Leaderboard extends cc.Component {
         var gas_price = "1000000"
         var gas_limit = "2000000"
         var callFunction = "get_score_rankboard";
-        //var callArgs = "[\"" + $("#search_value").val() + "\"]"; //in the form of ["args"]
         var contract = {
             "function": callFunction,
             "args": "[]"
