@@ -1,4 +1,4 @@
-const {ccclass, property} = cc._decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class HomeUI extends cc.Component {
@@ -9,10 +9,9 @@ export default class HomeUI extends cc.Component {
     btnInstallWallet: cc.Button = null;
 
     static firstTime = true; //刚进入游戏不显示“捐赠”按钮
-    onLoad () {
+    onLoad() {
         this.btnDonate.node.active = false;
         this.btnInstallWallet.node.active = true;
-        //TODO: 检测有无钱包
     }
 
     onInstallWalletBtnClick() {
@@ -21,5 +20,12 @@ export default class HomeUI extends cc.Component {
 
     update() {
         //不断检测有无钱包
+        if (window.webExtensionWallet) {
+            this.btnDonate.node.active = true;
+            this.btnInstallWallet.node.active = false;
+        } else {
+            this.btnDonate.node.active = false;
+            this.btnInstallWallet.node.active = true;
+        }
     }
 }

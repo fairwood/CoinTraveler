@@ -1,7 +1,8 @@
-import { MainCtrl } from "./MainCtrl";
+import { MainCtrl, ContractAddress } from "./MainCtrl";
 import BalanceFormatter from "./BalanceFormatter";
 
 const { ccclass, property } = cc._decorator;
+
 
 @ccclass
 export default class UploadUI extends cc.Component {
@@ -38,11 +39,37 @@ export default class UploadUI extends cc.Component {
 
     onUploadBtnClick() {
         try {
+            let score = MainCtrl.Instance.lastScore;
             let donateAmount = parseFloat(this.edtDonate.string);
             let comment = this.edtComment.string;
-            console.log("调用钱包", MainCtrl.Instance.lastScore, donateAmount, comment);
+            console.log("调用钱包", score, donateAmount, comment);
+
+            var nebPay = new NebPay();
+            var serialNumber;
+            //var callbackUrl = NebPay.config.mainnetUrl;
+            var callbackUrl = NebPay.config.testnetUrl;
+
+            var to = ContractAddress;
+            var value = donateAmount;
+            var callFunction = 'submit';
+            var callArgs = '['+score+',"'+comment+'"]';
+            serialNumber = nebPay.call(to, value, callFunction, callArgs, {
+                qrcode: {
+                    showQRCode: true
+                },
+                goods: {
+                    name: "test",
+                    desc: "test goods"
+                },
+                callback:callbackUrl,
+                listener: this.listener  //set listener for extension transaction result
+            });
         } catch (error) {
             console.error(error);
         }
+    }
+
+    listener(resp) {
+        console.log("resp: " + JSON.stringify(resp));
     }
 }
