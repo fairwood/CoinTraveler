@@ -1,3 +1,5 @@
+import { MainCtrl } from "./MainCtrl";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -12,6 +14,10 @@ export default class HomeUI extends cc.Component {
     onLoad() {
         this.btnDonate.node.active = false;
         this.btnInstallWallet.node.active = true;
+    }
+
+    onEnable() {
+        MainCtrl.Instance.checkWallet();
     }
 
     onInstallWalletBtnClick() {

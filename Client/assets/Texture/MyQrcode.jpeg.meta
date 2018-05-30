@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "d9db3098-e193-49f0-b1cf-280d8e4e473e",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "MyQrcode": {
+      "ver": "1.0.3",
+      "uuid": "0ce9f4c4-7040-4c3e-9901-0861c2333599",
+      "rawTextureUuid": "d9db3098-e193-49f0-b1cf-280d8e4e473e",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 509,
+      "height": 509,
+      "rawWidth": 509,
+      "rawHeight": 509,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

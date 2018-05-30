@@ -5,7 +5,7 @@
   "excludeScenes": [
     "2d2f792f-a40c-49bb-a189-ed176a246e49"
   ],
-  "includeAnySDK": false,
+  "includeAnySDK": true,
   "includeSDKBox": false,
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,

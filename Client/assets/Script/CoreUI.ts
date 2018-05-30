@@ -13,9 +13,10 @@ export class CoreUI extends cc.Component {
     t: number = 0;
     interval: number = 1;
     nextDayCountdown: number = 1e8;
-    speedMods: number[] = [0, 5, 20, 100];
-    speedersButton: boolean[] = [false, false, false, false];
-    speedersKeyboard: boolean[] = [false, false, false, false];
+    baseSpeed: number = 1;
+    speedMods: number[] = [1, 5, 20, 100, 500];
+    speedersButton: boolean[] = [false, false, false, false, false];
+    speedersKeyboard: boolean[] = [false, false, false, false, false];
 
     dayWidth = 3;
     width = 450;
@@ -25,6 +26,8 @@ export class CoreUI extends cc.Component {
     lblPrice: cc.Label = null;
     @property(cc.Label)
     lblDate: cc.Label = null;
+    @property(cc.Label)
+    lblNews: cc.Label = null;
     @property(cc.Label)
     lblFiatBalance: cc.Label = null;
     @property(cc.Label)
@@ -39,6 +42,8 @@ export class CoreUI extends cc.Component {
     lblLastOper: cc.Label = null;
     @property(cc.Node)
     highestLine: cc.Node = null;
+    @property(cc.Label)
+    lblCurrentPrice: cc.Label = null;
 
     @property(cc.Label)
     lblSpeed: cc.Label = null;
@@ -47,6 +52,7 @@ export class CoreUI extends cc.Component {
 
     lastOperDir: number = null; //1买   2卖
     lastOperPrice: number = null;
+    historicalHighestPrice: number;
 
     onLoad() {
         let self = this;
@@ -54,6 +60,7 @@ export class CoreUI extends cc.Component {
             const btnSpeed = this.btnSpeeds[i];
             btnSpeed.node.on(cc.Node.EventType.TOUCH_START, function (event) {
                 self.speedersButton[i] = true;
+                self.baseSpeed = self.speedMods[i];
             });
             btnSpeed.node.on(cc.Node.EventType.TOUCH_END, function (event) {
                 self.speedersButton[i] = false;
@@ -64,15 +71,23 @@ export class CoreUI extends cc.Component {
                 switch (event.keyCode) {
                     case cc.KEY[1]:
                         self.speedersKeyboard[0] = true;
+                        self.baseSpeed = self.speedMods[0];
                         break;
                     case cc.KEY[2]:
                         self.speedersKeyboard[1] = true;
+                        self.baseSpeed = self.speedMods[1];
                         break;
                     case cc.KEY[3]:
                         self.speedersKeyboard[2] = true;
+                        self.baseSpeed = self.speedMods[2];
                         break;
                     case cc.KEY[4]:
                         self.speedersKeyboard[3] = true;
+                        self.baseSpeed = self.speedMods[3];
+                        break;
+                    case cc.KEY[5]:
+                        self.speedersKeyboard[4] = true;
+                        self.baseSpeed = self.speedMods[4];
                         break;
                 }
             });
@@ -90,6 +105,9 @@ export class CoreUI extends cc.Component {
                     case cc.KEY[4]:
                         self.speedersKeyboard[3] = false;
                         break;
+                    case cc.KEY[5]:
+                        self.speedersKeyboard[4] = false;
+                        break;
                 }
             });
         }
@@ -105,50 +123,57 @@ export class CoreUI extends cc.Component {
         });
     }
 
+    restart() {
+        this.fiatBalance = 100 / CoreUI.USD2CNY;
+        this.btcBalance = 0;
+        this.t = 0;
+        this.nextDayCountdown = 0;
+        this.historicalHighestPrice = 0.1;
+        this.graphics.moveTo(0, 0);
+        this.lastOper.active = false;
+        this.lastOperDir = null;
+        this.lastOperPrice = null;
+        this.highestLine.position = new cc.Vec2(0, 0);
+        this.baseSpeed = 1;
+        MainCtrl.Instance.lastTradeHistory = [];
+    }
+
     BuyAll() {
         console.log("全仓买入");
         let data = MainCtrl.Instance.BTCHistory;
         let price = data[this.t]['close'];
         let amountOfBTC = Math.min(20000000 - this.btcBalance, this.fiatBalance / price);
+        if (this.fiatBalance < this.btcBalance * price * 0.00001) return;
         this.btcBalance += amountOfBTC;
         this.fiatBalance -= amountOfBTC * price;
         this.lastOperDir = 1;
         this.lastOperPrice = price;
+        MainCtrl.Instance.lastTradeHistory.push([this.t, price, 1, amountOfBTC]);
     }
     SellAll() {
         console.log("全仓卖出");
         let data = MainCtrl.Instance.BTCHistory;
         let price = data[this.t]['close'];
         let amountOfBTC = this.btcBalance;
+        if (amountOfBTC < this.fiatBalance / price * 0.00001) return;
         this.fiatBalance += amountOfBTC * price;
         this.btcBalance -= amountOfBTC;
         this.lastOperDir = 2;
         this.lastOperPrice = price;
+        MainCtrl.Instance.lastTradeHistory.push([this.t, price, 2, amountOfBTC]);
     }
 
-    restart() {
-        this.fiatBalance = 100 / CoreUI.USD2CNY;
-        this.btcBalance = 0;
-        this.t = 0;
-        this.nextDayCountdown = 0;
-        this.historicalHighestPrice = 0;
-        this.graphics.moveTo(0, 0);
-        this.lastOper.active = false;
-        this.lastOperDir = null;
-        this.lastOperPrice = null;
-        this.highestLine.position = new cc.Vec2(0, 0);
-    }
     update(dt: number) {
         let data = MainCtrl.Instance.BTCHistory;
         if (this.t >= (data as Array<any>).length - 1) return;
         let speedMod = 1;
-        for (let i = 0; i < this.speedersButton.length; i++) {
-            if (this.speedersButton[i] || this.speedersKeyboard[i]) {
-                speedMod *= this.speedMods[i];
-            }
-        }
-        this.lblSpeed.string = (speedMod / this.interval).toFixed() + "天/s";
-        this.nextDayCountdown -= dt * speedMod;
+        // for (let i = 0; i < this.speedersButton.length; i++) {
+        //     if (this.speedersButton[i] || this.speedersKeyboard[i]) {
+        //         speedMod *= this.speedMods[i];
+        //     }
+        // }
+        this.lblSpeed.string = (speedMod * this.baseSpeed / this.interval).toFixed() + "天/s";
+        this.nextDayCountdown -= dt * speedMod * this.baseSpeed;
         while (this.nextDayCountdown <= 0 && this.t < (data as Array<any>).length - 1) {
             this.t++;
             // console.log("t", this.t);
@@ -157,9 +182,13 @@ export class CoreUI extends cc.Component {
             if (price > this.historicalHighestPrice) {
                 this.historicalHighestPrice = price;
             }
-
-
+            let news = data[this.t]['news'];
+            if (news) {
+                this.popupNews(news);
+            }
         }
+
+        let price = data[this.t]['close'];
 
         {
             this.graphics.clear();
@@ -180,22 +209,23 @@ export class CoreUI extends cc.Component {
 
             if (this.lastOperDir) {
                 this.lastOper.position = new cc.Vec2(0, this.lastOperPrice * factor);
-                this.lblLastOper.string = this.lastOperDir == 1? '最近买入' : '最近卖出';
+                this.lblLastOper.string = this.lastOperDir == 1 ? '最近买入' : '最近卖出';
                 this.lastOper.active = true;
             } else {
                 this.lastOper.active = false;
             }
 
             this.highestLine.position = new cc.Vec2(0, this.historicalHighestPrice * factor);
+            this.lblCurrentPrice.string = "￥" + BalanceFormatter.formatCNY(price * CoreUI.USD2CNY);
+            this.lblCurrentPrice.node.position = new cc.Vec2(this.lblCurrentPrice.node.position.x, price * factor);
         }
 
-        let price = data[this.t]['close'];
 
         this.lblPrice.string = "￥" + BalanceFormatter.formatCNY(price * CoreUI.USD2CNY);
         this.lblDate.string = data[this.t]['date'];
 
-        this.lblFiatBalance.string = BalanceFormatter.formatCNY(this.fiatBalance * CoreUI.USD2CNY) + "CNY";
-        this.lblBtcBalance.string = BalanceFormatter.formatBTC(this.btcBalance) + "BTC";
+        this.lblFiatBalance.string = BalanceFormatter.formatCNY(Math.max(0, this.fiatBalance) * CoreUI.USD2CNY) + "CNY";
+        this.lblBtcBalance.string = BalanceFormatter.formatBTC(Math.max(0, this.btcBalance)) + "BTC";
         let totalAsBtc = this.fiatBalance / price + this.btcBalance;
         this.lblTotal.string = BalanceFormatter.formatCNY(totalAsBtc * price * CoreUI.USD2CNY) + "CNY = " + BalanceFormatter.formatBTC(totalAsBtc) + "BTC";
 
@@ -207,7 +237,15 @@ export class CoreUI extends cc.Component {
                 MainCtrl.Instance.GotoResult();
             }, 1000);
         }
+
+        this.newsOpacity = Math.max(0, this.newsOpacity - 1 * dt);
+        this.lblNews.node.opacity = Math.min(1, this.newsOpacity) * 255;
+        console.log('news', this.lblNews.node.opacity);
     }
 
-    historicalHighestPrice: number;
+    newsOpacity = 0;
+    popupNews(news: string) {
+        this.lblNews.string = news;
+        this.newsOpacity = 4.5;
+    }
 }

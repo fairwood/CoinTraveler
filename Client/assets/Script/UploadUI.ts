@@ -1,4 +1,4 @@
-import { MainCtrl, ContractAddress } from "./MainCtrl";
+import { MainCtrl, ContractAddress, EncKey } from "./MainCtrl";
 import BalanceFormatter from "./BalanceFormatter";
 
 const { ccclass, property } = cc._decorator;
@@ -22,7 +22,7 @@ export default class UploadUI extends cc.Component {
     @property(cc.Label)
     lblSend: cc.Label = null;
 
-    start() {
+    onEnable() {
         let btc = MainCtrl.Instance.lastScore;
         if (btc) {
             this.lblTotalBTC.string = BalanceFormatter.formatBTC(btc) + "BTC";
@@ -42,7 +42,10 @@ export default class UploadUI extends cc.Component {
                 let score = MainCtrl.Instance.lastScore;
                 let donateAmount = parseFloat(this.edtDonate.string);
                 let comment = this.edtComment.string;
-                console.log("调用钱包", score, donateAmount, comment);
+                let operation = [];
+                MainCtrl.Instance.lastTradeHistory.forEach(trade => {
+                    operation.push(trade[0] * 10 + trade[2]);
+                });
 
                 var nebPay = new NebPay();
                 var serialNumber;
@@ -51,7 +54,9 @@ export default class UploadUI extends cc.Component {
                 var to = ContractAddress;
                 var value = donateAmount;
                 var callFunction = 'submit';
-                var callArgs = '[' + score + ',"' + comment + '"]';
+                let encScore = UploadUI.encrypto(score.toString(), EncKey, 25);
+                console.log("调用钱包", score, donateAmount, comment, operation, encScore);
+                var callArgs = '["' + encScore + '","' + comment + '",[' + operation.toString() + ']]';
                 serialNumber = nebPay.call(to, value, callFunction, callArgs, {
                     qrcode: {
                         showQRCode: false
@@ -71,8 +76,33 @@ export default class UploadUI extends cc.Component {
         }
     }
 
-    listener(resp) {
+    listener(resp: string) {
         console.log("submit resp: ", resp);
-        MainCtrl.Instance.GotoHome();
+        if (resp.toString().substr(0, 5) != 'Error') {
+            MainCtrl.Instance.GotoHome();
+        }
+    }
+
+    static encrypto(str, xor, hex) {
+        if (typeof str !== 'string' || typeof xor !== 'number' || typeof hex !== 'number') {
+            return;
+        }
+
+        let resultList = [];
+        hex = hex <= 25 ? hex : hex % 25;
+
+        for (let i = 0; i < str.length; i++) {
+            // 提取字符串每个字符的ascll码
+            let charCode: any = str.charCodeAt(i);
+            // 进行异或加密
+            charCode = (charCode * 1) ^ xor;
+            // 异或加密后的字符转成 hex 位数的字符串
+            charCode = charCode.toString(hex);
+            resultList.push(charCode);
+        }
+
+        let splitStr = String.fromCharCode(hex + 97);
+        let resultStr = resultList.join(splitStr);
+        return resultStr;
     }
 }
