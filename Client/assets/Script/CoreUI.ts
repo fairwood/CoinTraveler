@@ -1,5 +1,6 @@
 import { MainCtrl } from "./MainCtrl";
 import BalanceFormatter from "./BalanceFormatter";
+import MoneyLabel from "./MoneyLabel";
 
 const { ccclass, property } = cc._decorator;
 
@@ -11,6 +12,7 @@ export class CoreUI extends cc.Component {
     static readonly USD2CNY = 6.3;
 
     t: number = 0;
+    isRunning = false;
     interval: number = 1;
     nextDayCountdown: number = 1e8;
     baseSpeed: number = 1;
@@ -19,21 +21,25 @@ export class CoreUI extends cc.Component {
     speedersKeyboard: boolean[] = [false, false, false, false, false];
 
     dayWidth = 3;
-    width = 450;
-    height = 345;
+    width = 501;//必须是dayWidth整数倍
+    height = 282;
 
     @property(cc.Label)
     lblPrice: cc.Label = null;
     @property(cc.Label)
     lblDate: cc.Label = null;
+    @property(cc.Node)
+    grpNews: cc.Node = null;
     @property(cc.Label)
     lblNews: cc.Label = null;
+    @property(MoneyLabel)
+    lblFiatBalance: MoneyLabel = null;
+    @property(MoneyLabel)
+    lblBtcBalance: MoneyLabel = null;
     @property(cc.Label)
-    lblFiatBalance: cc.Label = null;
+    lblTotalAsCNY: cc.Label = null;
     @property(cc.Label)
-    lblBtcBalance: cc.Label = null;
-    @property(cc.Label)
-    lblTotal: cc.Label = null;
+    lblTotalAsBTC: cc.Label = null;
     @property(cc.Graphics)
     graphics: cc.Graphics = null;
     @property(cc.Node)
@@ -42,20 +48,30 @@ export class CoreUI extends cc.Component {
     lblLastOper: cc.Label = null;
     @property(cc.Node)
     highestLine: cc.Node = null;
+    @property(cc.Node)
+    currentPriceLine: cc.Node = null;
     @property(cc.Label)
     lblCurrentPrice: cc.Label = null;
+    @property(cc.Button)
+    btnBuyAll: cc.Button = null;
+    @property(cc.Button)
+    btnSellAll: cc.Button = null;
 
     @property(cc.Label)
     lblSpeed: cc.Label = null;
     @property([cc.Button])
     btnSpeeds: Array<cc.Button> = [];
 
+    lastOperT: number = null; //第几天
     lastOperDir: number = null; //1买   2卖
     lastOperPrice: number = null;
     historicalHighestPrice: number;
 
     onLoad() {
         let self = this;
+        this.lblFiatBalance.formatterFunc = (n: number) => BalanceFormatter.formatCNY(n) + 'CNY';
+        this.lblBtcBalance.formatterFunc = (n: number) => BalanceFormatter.formatBTC(n) + 'BTC';
+
         for (let i = 0; i < this.btnSpeeds.length; i++) {
             const btnSpeed = this.btnSpeeds[i];
             btnSpeed.node.on(cc.Node.EventType.TOUCH_START, function (event) {
@@ -126,16 +142,18 @@ export class CoreUI extends cc.Component {
     restart() {
         this.fiatBalance = 100 / CoreUI.USD2CNY;
         this.btcBalance = 0;
-        this.t = 0;
+        this.t = -1;
         this.nextDayCountdown = 0;
         this.historicalHighestPrice = 0.1;
         this.graphics.moveTo(0, 0);
         this.lastOper.active = false;
+        this.lastOperT = null;
         this.lastOperDir = null;
         this.lastOperPrice = null;
         this.highestLine.position = new cc.Vec2(0, 0);
         this.baseSpeed = 1;
         MainCtrl.Instance.lastTradeHistory = [];
+        this.isRunning = true;
     }
 
     BuyAll() {
@@ -146,9 +164,11 @@ export class CoreUI extends cc.Component {
         if (this.fiatBalance < this.btcBalance * price * 0.00001) return;
         this.btcBalance += amountOfBTC;
         this.fiatBalance -= amountOfBTC * price;
+        this.lastOperT = this.t;
         this.lastOperDir = 1;
         this.lastOperPrice = price;
         MainCtrl.Instance.lastTradeHistory.push([this.t, price, 1, amountOfBTC]);
+        this.refreshBalance();
     }
     SellAll() {
         console.log("全仓卖出");
@@ -158,9 +178,11 @@ export class CoreUI extends cc.Component {
         if (amountOfBTC < this.fiatBalance / price * 0.00001) return;
         this.fiatBalance += amountOfBTC * price;
         this.btcBalance -= amountOfBTC;
+        this.lastOperT = this.t;
         this.lastOperDir = 2;
         this.lastOperPrice = price;
         MainCtrl.Instance.lastTradeHistory.push([this.t, price, 2, amountOfBTC]);
+        this.refreshBalance();
     }
 
     update(dt: number) {
@@ -172,7 +194,7 @@ export class CoreUI extends cc.Component {
         //         speedMod *= this.speedMods[i];
         //     }
         // }
-        this.lblSpeed.string = (speedMod * this.baseSpeed / this.interval).toFixed() + "天/s";
+        this.lblSpeed.string = (speedMod * this.baseSpeed / this.interval).toFixed();
         this.nextDayCountdown -= dt * speedMod * this.baseSpeed;
         while (this.nextDayCountdown <= 0 && this.t < (data as Array<any>).length - 1) {
             this.t++;
@@ -182,11 +204,13 @@ export class CoreUI extends cc.Component {
             if (price > this.historicalHighestPrice) {
                 this.historicalHighestPrice = price;
             }
-            let news = data[this.t]['news'];
+            let news: string = data[this.t]['news'];
             if (news && news.length > 0) {
                 this.popupNews(news);
             }
         }
+
+        if (this.t < 0) return;
 
         let price = data[this.t]['close'];
 
@@ -194,12 +218,12 @@ export class CoreUI extends cc.Component {
             this.graphics.clear();
 
             //Axes
-            this.graphics.moveTo(0, 0);
-            this.graphics.lineTo(this.width, 0);
+            // this.graphics.moveTo(0, 0);
+            // this.graphics.lineTo(this.width, 0);
 
             //Line Chart
             let factor = this.height * 0.96 / this.historicalHighestPrice;
-            let earliestT = Math.max(0, this.t - this.width / this.dayWidth);
+            let earliestT = Math.max(0, this.t - Math.round(this.width / this.dayWidth));
             this.graphics.moveTo(0, data[earliestT]['close'] * factor);
             for (let i = earliestT + 1; i <= this.t; i++) {
                 this.graphics.lineTo((i - earliestT) * this.dayWidth, data[i]['close'] * factor);
@@ -208,7 +232,7 @@ export class CoreUI extends cc.Component {
             this.graphics.stroke();
 
             if (this.lastOperDir) {
-                this.lastOper.position = new cc.Vec2(0, this.lastOperPrice * factor);
+                this.lastOper.position = new cc.Vec2(Math.max(0, this.lastOperT - earliestT) * this.dayWidth, this.lastOperPrice * factor);
                 this.lblLastOper.string = this.lastOperDir == 1 ? '最近买入' : '最近卖出';
                 this.lastOper.active = true;
             } else {
@@ -217,30 +241,37 @@ export class CoreUI extends cc.Component {
 
             this.highestLine.position = new cc.Vec2(0, this.historicalHighestPrice * factor);
             this.lblCurrentPrice.string = "￥" + BalanceFormatter.formatCNY(price * CoreUI.USD2CNY);
-            this.lblCurrentPrice.node.position = new cc.Vec2(this.lblCurrentPrice.node.position.x, price * factor);
+            this.currentPriceLine.position = new cc.Vec2(Math.min(this.width, this.t - earliestT) * this.dayWidth, price * factor);
         }
 
 
         this.lblPrice.string = "￥" + BalanceFormatter.formatCNY(price * CoreUI.USD2CNY);
         this.lblDate.string = data[this.t]['date'];
 
-        this.lblFiatBalance.string = BalanceFormatter.formatCNY(Math.max(0, this.fiatBalance) * CoreUI.USD2CNY) + "CNY";
-        this.lblBtcBalance.string = BalanceFormatter.formatBTC(Math.max(0, this.btcBalance)) + "BTC";
         let totalAsBtc = this.fiatBalance / price + this.btcBalance;
-        this.lblTotal.string = BalanceFormatter.formatCNY(totalAsBtc * price * CoreUI.USD2CNY) + "CNY = " + BalanceFormatter.formatBTC(totalAsBtc) + "BTC";
+        this.lblTotalAsCNY.string = BalanceFormatter.formatCNY(totalAsBtc * price * CoreUI.USD2CNY);
+        this.lblTotalAsBTC.string = '=' + BalanceFormatter.formatBTC(totalAsBtc);
 
-        if (this.t >= (data as Array<any>).length - 1) {
+        if (this.isRunning && this.t >= (data as Array<any>).length - 1) {
             MainCtrl.Instance.lastScore = totalAsBtc;
             MainCtrl.Instance.lastPrice = price;
             console.log("End");
             setTimeout(() => {
                 MainCtrl.Instance.GotoResult();
             }, 1000);
+            this.isRunning = false;
         }
 
+        this.btnBuyAll.interactable = this.isRunning && this.fiatBalance > 0.01;
+        this.btnSellAll.interactable = this.isRunning && this.btcBalance > 0.00001;
+
         this.newsOpacity = Math.max(0, this.newsOpacity - 1 * dt);
-        this.lblNews.node.opacity = Math.min(1, this.newsOpacity) * 255;
-        console.log('news', this.lblNews.node.opacity);
+        this.grpNews.opacity = Math.min(1, this.newsOpacity) * 255;
+    }
+
+    refreshBalance() {
+        this.lblFiatBalance.setTargetNumber(Math.max(0, this.fiatBalance) * CoreUI.USD2CNY);
+        this.lblBtcBalance.setTargetNumber(Math.max(0, this.btcBalance));
     }
 
     newsOpacity = 0;

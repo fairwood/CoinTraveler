@@ -23,6 +23,8 @@ export class MainCtrl extends cc.Component {
     lastTradeHistory = [];
 
     @property(cc.Node)
+    UIContainer: cc.Node = null;
+    @property(cc.Node)
     HomeUI: cc.Node = null;
     @property(cc.Node)
     CoreUI: cc.Node = null;
@@ -45,13 +47,30 @@ export class MainCtrl extends cc.Component {
             console.log('BTCHistory loaded');
             this.BTCHistory = txt;
             this.fetchLatestData();
+            // let usd = 100 / CoreUI.USD2CNY;
+            // let btc = 0;
+            // let total = [];
+            // for (let i = 0; i < this.BTCHistory.length - 1; i++) {
+            //     const data = this.BTCHistory[i];
+            //     if (data.close < this.BTCHistory[i + 1].close) {
+            //         btc += usd / data.close;
+            //         usd = 0;
+            //     } else {
+            //         usd += btc * data.close;
+            //         btc = 0;
+            //     }
+            //     total.push([usd, btc]);
+            // }
+            // console.log('maxScore', (usd + btc * this.BTCHistory[this.BTCHistory.length - 1].close) * CoreUI.USD2CNY);
+            // console.log('maxScoreBTC', usd/ this.BTCHistory[this.BTCHistory.length - 1].close + btc);
+            // console.log(total);
         }.bind(this));
 
     }
 
     start() {
 
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.HomeUI.active = true;
@@ -91,7 +110,7 @@ export class MainCtrl extends cc.Component {
     }
 
     OnBtnStartClick() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.CoreUI.active = true;
@@ -99,32 +118,32 @@ export class MainCtrl extends cc.Component {
     }
 
     GotoResult() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.ResultUI.active = true;
     }
     GotoLeaderboard() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.LeaderboardUI.active = true;
     }
     GotoDonate() {
         this.lastScore = 0;
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.UploadUI.active = true;
     }
     GotoUpload() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.UploadUI.active = true;
     }
     GotoHome() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.HomeUI.active = true;

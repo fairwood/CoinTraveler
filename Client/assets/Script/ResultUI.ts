@@ -25,7 +25,7 @@ export default class ResultUI extends cc.Component {
 
     onEnable() {
         let btc = MainCtrl.Instance.lastScore;
-        this.lblTotalBTC.string = BalanceFormatter.formatBTC(btc) + "BTC";
+        this.lblTotalBTC.string = BalanceFormatter.formatBTC(btc);
         this.lblTotalCNY.string = "=￥" + BalanceFormatter.formatCNY(btc * MainCtrl.Instance.lastPrice * CoreUI.USD2CNY);
 
         let children = this.node.children;
@@ -71,15 +71,18 @@ export default class ResultUI extends cc.Component {
     }
 
     calcTitle(finalBTC: number, finalPrice: number, tradeHistory: Object[]) {
-        if (finalBTC * finalPrice * CoreUI.USD2CNY < 50) {
-            return '一事无成的浑蛋';
+        let lastTrade = tradeHistory[tradeHistory.length - 1];
+        if (this.isTakongDog(finalBTC, finalPrice, tradeHistory)) {
+            return '踏空狗';
         }
-        if (tradeHistory[0][0] < 100 && finalBTC < 1) {
+        if (finalBTC * finalPrice * CoreUI.USD2CNY < 100) {
+            return '归零膏';
+        }
+        if (tradeHistory[0][3] * 0.7 > finalBTC && tradeHistory.length < 15) {
             return '追涨杀跌的韭菜';
         }
-        let lastTrade = tradeHistory[tradeHistory.length - 1];
-        if (lastTrade[2] == 2 && lastTrade[0] < 2600) {
-            return '踏空狗';
+        if (tradeHistory[0][3] * 0.7 > finalBTC && tradeHistory.length >= 15) {
+            return '神操作韭菜';
         }
         if (tradeHistory.length < 4 && finalBTC > 200) {
             return '价值投资者';
@@ -111,13 +114,24 @@ export default class ResultUI extends cc.Component {
         if (finalBTC >= 1e4) {
             return '神级操盘手';
         }
-        if (finalBTC >= 1e3) {
+        if (finalBTC > tradeHistory[0][3]*1.1) {
             return '操盘手';
         }
         if (finalBTC >= 1e1) {
             return '高级韭菜';
         }
         return '韭菜';
+    }
+    isTakongDog(finalBTC: number, finalPrice: number, tradeHistory: Object[]): boolean {
+        if (finalBTC < 300 && tradeHistory.length < 8) {
+            for (let i = 1; i < tradeHistory.length; i++) {
+                const trade = tradeHistory[i];
+                const previousTrade = tradeHistory[i - 1];
+                if (previousTrade[2] == 2 && trade[2] == 1 && previousTrade[1] * 5 <= trade[1]) {
+                    return true;
+                }
+            }
+        }
     }
     isBuoduanPrince(finalBTC: number, finalPrice: number, tradeHistory: Object[]): boolean {
         let succCount, failCount;
