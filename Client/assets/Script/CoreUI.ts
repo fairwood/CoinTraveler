@@ -183,7 +183,7 @@ export class CoreUI extends cc.Component {
                 this.historicalHighestPrice = price;
             }
             let news = data[this.t]['news'];
-            if (news) {
+            if (news && news.length > 0) {
                 this.popupNews(news);
             }
         }
