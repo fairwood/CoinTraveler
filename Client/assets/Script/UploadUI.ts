@@ -37,7 +37,11 @@ export default class UploadUI extends cc.Component {
     }
 
     onBackBtnClick() {
-        MainCtrl.Instance.GotoResult();
+        if (MainCtrl.Instance.lastScore > 0.00000001) {
+            MainCtrl.Instance.GotoResult();
+        } else {
+            MainCtrl.Instance.GotoHome();
+        }
     }
 
     onUploadBtnClick() {
