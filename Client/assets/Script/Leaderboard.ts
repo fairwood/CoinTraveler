@@ -96,12 +96,14 @@ export default class Leaderboard extends cc.Component {
 
     setAndRefreshElement(index: number | string, element: cc.Node, data: object) {
         if (data) {
+            element.getChildByName('LblRank').getComponent(cc.Label).string = index.toString();
             element.getChildByName('LblAddress').getComponent(cc.Label).string = data.address;
             element.getChildByName('LblScore').getComponent(cc.Label).string = BalanceFormatter.formatBTC(data.score);
             element.getChildByName('LblDonation').getComponent(cc.Label).string = BalanceFormatter.formatNAS(Number(data.donation) / 1e18);
             element.getChildByName('LblComment').getComponent(cc.Label).string = data.comment;
         } else {
-            element.getChildByName('LblAddress').getComponent(cc.Label).string = index.toString();
+            element.getChildByName('LblRank').getComponent(cc.Label).string = index.toString();
+            element.getChildByName('LblAddress').getComponent(cc.Label).string = '';
             element.getChildByName('LblScore').getComponent(cc.Label).string = '';
             element.getChildByName('LblDonation').getComponent(cc.Label).string = '';
             element.getChildByName('LblComment').getComponent(cc.Label).string = '';
