@@ -7286,7 +7286,7 @@
       }
     ],
     "_tag": -1,
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 181
@@ -7325,7 +7325,7 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 896,
+      "x": 3683,
       "y": 0
     },
     "_skewX": 0,
@@ -8424,7 +8424,7 @@
     "_target": null,
     "_alignFlags": 37,
     "_left": 350.07654921020657,
-    "_right": -406,
+    "_right": -3193,
     "_top": 0,
     "_bottom": 0,
     "_verticalCenter": 0,
@@ -8927,12 +8927,6 @@
       },
       {
         "__id__": 251
-      },
-      {
-        "__id__": 253
-      },
-      {
-        "__id__": 255
       },
       {
         "__id__": 257
@@ -9559,7 +9553,7 @@
       }
     ],
     "_tag": -1,
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 238
@@ -9598,7 +9592,7 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 557,
+      "x": 3247,
       "y": 0
     },
     "_skewX": 0,
@@ -10122,12 +10116,19 @@
     "_parent": {
       "__id__": 221
     },
-    "_children": [],
+    "_children": [
+      {
+        "__id__": 252
+      },
+      {
+        "__id__": 254
+      }
+    ],
     "_tag": -1,
     "_active": true,
     "_components": [
       {
-        "__id__": 252
+        "__id__": 256
       }
     ],
     "_prefab": null,
@@ -10168,40 +10169,18 @@
     "groupIndex": 0
   },
   {
-    "__type__": "cc.Label",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 251
-    },
-    "_enabled": true,
-    "_useOriginalSize": false,
-    "_actualFontSize": 50,
-    "_fontSize": 50,
-    "_lineHeight": 60,
-    "_enableWrapText": true,
-    "_N$file": null,
-    "_isSystemFontUsed": true,
-    "_spacingX": 0,
-    "_N$string": "您的最终资产",
-    "_N$horizontalAlign": 1,
-    "_N$verticalAlign": 1,
-    "_N$fontFamily": "Arial",
-    "_N$overflow": 0
-  },
-  {
     "__type__": "cc.Node",
     "_name": "LblTotalAsBTC",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 221
+      "__id__": 251
     },
     "_children": [],
     "_tag": -1,
     "_active": true,
     "_components": [
       {
-        "__id__": 254
+        "__id__": 253
       }
     ],
     "_prefab": null,
@@ -10232,7 +10211,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 0,
-      "y": -311
+      "y": -148
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -10246,7 +10225,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 253
+      "__id__": 252
     },
     "_enabled": true,
     "_useOriginalSize": false,
@@ -10268,14 +10247,14 @@
     "_name": "Label-BTC",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 221
+      "__id__": 251
     },
     "_children": [],
     "_tag": -1,
     "_active": true,
     "_components": [
       {
-        "__id__": 256
+        "__id__": 255
       }
     ],
     "_prefab": null,
@@ -10306,7 +10285,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 353,
-      "y": -333
+      "y": -170
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -10320,7 +10299,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 255
+      "__id__": 254
     },
     "_enabled": true,
     "_useOriginalSize": false,
@@ -10332,6 +10311,28 @@
     "_isSystemFontUsed": true,
     "_spacingX": 0,
     "_N$string": "BTC",
+    "_N$horizontalAlign": 1,
+    "_N$verticalAlign": 1,
+    "_N$fontFamily": "Arial",
+    "_N$overflow": 0
+  },
+  {
+    "__type__": "cc.Label",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 251
+    },
+    "_enabled": true,
+    "_useOriginalSize": false,
+    "_actualFontSize": 50,
+    "_fontSize": 50,
+    "_lineHeight": 60,
+    "_enableWrapText": true,
+    "_N$file": null,
+    "_isSystemFontUsed": true,
+    "_spacingX": 0,
+    "_N$string": "您的最终资产",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -11452,7 +11453,7 @@
     },
     "_enabled": true,
     "lblTotalBTC": {
-      "__id__": 254
+      "__id__": 253
     },
     "edtComment": {
       "__id__": 280
@@ -11855,7 +11856,7 @@
       }
     ],
     "_tag": -1,
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 297
@@ -11894,7 +11895,7 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 858,
+      "x": 5683,
       "y": 0
     },
     "_skewX": 0,
@@ -12191,7 +12192,7 @@
     "_target": null,
     "_alignFlags": 37,
     "_left": 350.07654921020657,
-    "_right": -329,
+    "_right": -5154,
     "_top": 0,
     "_bottom": 0,
     "_verticalCenter": 0,
