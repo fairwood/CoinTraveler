@@ -47,23 +47,6 @@ export class MainCtrl extends cc.Component {
             console.log('BTCHistory loaded');
             this.BTCHistory = txt;
             this.fetchLatestData();
-            // let usd = 100 / CoreUI.USD2CNY;
-            // let btc = 0;
-            // let total = [];
-            // for (let i = 0; i < this.BTCHistory.length - 1; i++) {
-            //     const data = this.BTCHistory[i];
-            //     if (data.close < this.BTCHistory[i + 1].close) {
-            //         btc += usd / data.close;
-            //         usd = 0;
-            //     } else {
-            //         usd += btc * data.close;
-            //         btc = 0;
-            //     }
-            //     total.push([usd, btc]);
-            // }
-            // console.log('maxScore', (usd + btc * this.BTCHistory[this.BTCHistory.length - 1].close) * CoreUI.USD2CNY);
-            // console.log('maxScoreBTC', usd/ this.BTCHistory[this.BTCHistory.length - 1].close + btc);
-            // console.log(total);
         }.bind(this));
 
     }

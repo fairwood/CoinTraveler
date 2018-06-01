@@ -15,7 +15,7 @@ export class CoreUI extends cc.Component {
     isRunning = false;
     interval: number = 1;
     nextDayCountdown: number = 1e8;
-    baseSpeed: number = 1;
+    currentSpeeder: number = 0;
     speedMods: number[] = [1, 5, 20, 100, 500];
     speedersButton: boolean[] = [false, false, false, false, false];
     speedersKeyboard: boolean[] = [false, false, false, false, false];
@@ -76,56 +76,56 @@ export class CoreUI extends cc.Component {
             const btnSpeed = this.btnSpeeds[i];
             btnSpeed.node.on(cc.Node.EventType.TOUCH_START, function (event) {
                 self.speedersButton[i] = true;
-                self.baseSpeed = self.speedMods[i];
+                self.currentSpeeder = i;
             });
             btnSpeed.node.on(cc.Node.EventType.TOUCH_END, function (event) {
                 self.speedersButton[i] = false;
             });
 
-            cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, function (event) {
-                console.log("keyCode", event.keyCode)
-                switch (event.keyCode) {
-                    case cc.KEY[1]:
-                        self.speedersKeyboard[0] = true;
-                        self.baseSpeed = self.speedMods[0];
-                        break;
-                    case cc.KEY[2]:
-                        self.speedersKeyboard[1] = true;
-                        self.baseSpeed = self.speedMods[1];
-                        break;
-                    case cc.KEY[3]:
-                        self.speedersKeyboard[2] = true;
-                        self.baseSpeed = self.speedMods[2];
-                        break;
-                    case cc.KEY[4]:
-                        self.speedersKeyboard[3] = true;
-                        self.baseSpeed = self.speedMods[3];
-                        break;
-                    case cc.KEY[5]:
-                        self.speedersKeyboard[4] = true;
-                        self.baseSpeed = self.speedMods[4];
-                        break;
-                }
-            });
-            cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, function (event) {
-                switch (event.keyCode) {
-                    case cc.KEY[1]:
-                        self.speedersKeyboard[0] = false;
-                        break;
-                    case cc.KEY[2]:
-                        self.speedersKeyboard[1] = false;
-                        break;
-                    case cc.KEY[3]:
-                        self.speedersKeyboard[2] = false;
-                        break;
-                    case cc.KEY[4]:
-                        self.speedersKeyboard[3] = false;
-                        break;
-                    case cc.KEY[5]:
-                        self.speedersKeyboard[4] = false;
-                        break;
-                }
-            });
+            // cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, function (event) {
+            //     console.log("keyCode", event.keyCode)
+            //     switch (event.keyCode) {
+            //         case cc.KEY[1]:
+            //             self.speedersKeyboard[0] = true;
+            //             self.currentSpeeder = 0;
+            //             break;
+            //         case cc.KEY[2]:
+            //             self.speedersKeyboard[1] = true;
+            //             self.currentSpeeder = 1;
+            //             break;
+            //         case cc.KEY[3]:
+            //             self.speedersKeyboard[2] = true;
+            //             self.currentSpeeder = 2;
+            //             break;
+            //         case cc.KEY[4]:
+            //             self.speedersKeyboard[3] = true;
+            //             self.currentSpeeder = 3;
+            //             break;
+            //         case cc.KEY[5]:
+            //             self.speedersKeyboard[4] = true;
+            //             self.currentSpeeder = 4;
+            //             break;
+            //     }
+            // });
+            // cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, function (event) {
+            //     switch (event.keyCode) {
+            //         case cc.KEY[1]:
+            //             self.speedersKeyboard[0] = false;
+            //             break;
+            //         case cc.KEY[2]:
+            //             self.speedersKeyboard[1] = false;
+            //             break;
+            //         case cc.KEY[3]:
+            //             self.speedersKeyboard[2] = false;
+            //             break;
+            //         case cc.KEY[4]:
+            //             self.speedersKeyboard[3] = false;
+            //             break;
+            //         case cc.KEY[5]:
+            //             self.speedersKeyboard[4] = false;
+            //             break;
+            //     }
+            // });
         }
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, function (event) {
             switch (event.keyCode) {
@@ -151,7 +151,7 @@ export class CoreUI extends cc.Component {
         this.lastOperDir = null;
         this.lastOperPrice = null;
         this.highestLine.position = new cc.Vec2(0, 0);
-        this.baseSpeed = 1;
+        this.currentSpeeder = 0;
         MainCtrl.Instance.lastTradeHistory = [];
         this.isRunning = true;
     }
@@ -194,8 +194,12 @@ export class CoreUI extends cc.Component {
         //         speedMod *= this.speedMods[i];
         //     }
         // }
-        this.lblSpeed.string = (speedMod * this.baseSpeed / this.interval).toFixed();
-        this.nextDayCountdown -= dt * speedMod * this.baseSpeed;
+        this.lblSpeed.string = (speedMod * this.speedMods[this.currentSpeeder] / this.interval).toFixed();
+        for (let i = 0; i < this.btnSpeeds.length; i++) {
+            const btn = this.btnSpeeds[i];
+            btn.interactable = (i != this.currentSpeeder);
+        }
+        this.nextDayCountdown -= dt * speedMod * this.speedMods[this.currentSpeeder];
         while (this.nextDayCountdown <= 0 && this.t < (data as Array<any>).length - 1) {
             this.t++;
             // console.log("t", this.t);

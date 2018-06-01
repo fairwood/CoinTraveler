@@ -17,8 +17,8 @@ export default class Leaderboard extends cc.Component {
 
     tab = 'score';
 
-    static scoreBoard = [{address: '正在获取数据，请稍候……', score: 0, donation: 0, comment: ''}];
-    static donationBoard = [{address: '正在获取数据，请稍候……', score: 0, donation: 0, comment: ''}];
+    static scoreBoard = [{ address: '正在获取数据，请稍候……', score: 0, donation: 0, comment: '' }];
+    static donationBoard = [{ address: '正在获取数据，请稍候……', score: 0, donation: 0, comment: '' }];
 
     onLoad() {
         this.setAndRefreshElement('*', this.template, null);
@@ -27,13 +27,17 @@ export default class Leaderboard extends cc.Component {
             this.elements[i] = element;
             element.parent = this.container;
             element.name = i.toFixed();
-            this.setAndRefreshElement(i, element, null);
+            this.setAndRefreshElement(i + 1, element, null);
         }
     }
 
     onEnable() {
-        this.fetchData();
-        this.switchTab(null, 'score');
+        try {
+            this.fetchData();
+            this.switchTab(null, 'score');
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     fetchData() {
@@ -94,7 +98,7 @@ export default class Leaderboard extends cc.Component {
         if (data) {
             element.getChildByName('LblAddress').getComponent(cc.Label).string = index + '  ' + data.address;
             element.getChildByName('LblScore').getComponent(cc.Label).string = '分数' + BalanceFormatter.formatBTC(data.score) + 'BTC';
-            element.getChildByName('LblDonation').getComponent(cc.Label).string = '捐赠' + BalanceFormatter.formatNAS(Number(data.donation)/1e18) + 'NAS';
+            element.getChildByName('LblDonation').getComponent(cc.Label).string = '捐赠' + BalanceFormatter.formatNAS(Number(data.donation) / 1e18) + 'NAS';
             element.getChildByName('LblComment').getComponent(cc.Label).string = data.comment;
         } else {
             element.getChildByName('LblAddress').getComponent(cc.Label).string = index.toString();

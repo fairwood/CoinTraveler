@@ -21,7 +21,7 @@ export default class ResultUI extends cc.Component {
 
     trades = [];
 
-    intervals = [1, 2, 2, 2, 2, 2, 2, 2, 2];
+    intervals = [0.25, 2, 2, 2, 2, 2, 2, 2, 2];
 
     onEnable() {
         let btc = MainCtrl.Instance.lastScore;
@@ -72,6 +72,9 @@ export default class ResultUI extends cc.Component {
 
     calcTitle(finalBTC: number, finalPrice: number, tradeHistory: Object[]) {
         let lastTrade = tradeHistory[tradeHistory.length - 1];
+        if (tradeHistory.length == 0) {
+            return '时间线守护者';
+        }
         if (this.isTakongDog(finalBTC, finalPrice, tradeHistory)) {
             return '踏空狗';
         }
@@ -114,7 +117,7 @@ export default class ResultUI extends cc.Component {
         if (finalBTC >= 1e4) {
             return '神级操盘手';
         }
-        if (finalBTC > tradeHistory[0][3]*1.1) {
+        if (finalBTC > tradeHistory[0][3] * 1.1) {
             return '操盘手';
         }
         if (finalBTC >= 1e1) {
