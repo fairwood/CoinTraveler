@@ -20,9 +20,9 @@ export class CoreUI extends cc.Component {
     speedersButton: boolean[] = [false, false, false, false, false];
     speedersKeyboard: boolean[] = [false, false, false, false, false];
 
-    dayWidth = 3;
-    width = 501;//必须是dayWidth整数倍
-    height = 282;
+    dayWidth = 5;
+    width = 880;//必须是dayWidth整数倍
+    height = 468;
 
     @property(cc.Label)
     lblPrice: cc.Label = null;
