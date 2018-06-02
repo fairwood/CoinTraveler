@@ -28,8 +28,18 @@ if [ ! -d $NEBJS ];then
 	git clone https://github.com/nebulasio/neb.js.git
 fi
 cd $NEBJS;
-if [ ! -d dist ];then
-	npm install && npm run build
+NEB_FILE='nebulas.min.js'
+
+if [ ! -f dist/$NEB_FILE ];then
+	npm install;
+	npm run build;
+	npm install minify --save;
+	echo "const minify = require('minify');
+	minify('dist/nebulas.js', (error, data) => {
+    	if (error){ return console.error(error.message);}
+    	console.log(data);
+	});" > neb_minify.js
+	node neb_minify.js>dist/$NEB_FILE
 fi
 cd $ROOT/$RES
 NEBPAY='nebPay'
@@ -43,10 +53,10 @@ if [ ! -d $DIST ];then
 	echo "mkdir $DIST"
 	mkdir -p $DIST
 fi
-cp $ROOT/$RES/$NEBJS/dist/* $DIST/
-cp $ROOT/$RES/$NEBPAY/dist/* $DIST/
-SED='s/<\/head>/<script type=\"text\/javascript\" src=\".\/dist\/nebulas.js\"><\/script>'
-SED+='<script type=\"text\/javascript\" src=\".\/dist\/nebPay.js\"><\/script>'
+cp $ROOT/$RES/$NEBJS/dist/nebulas.min.js $DIST/
+cp $ROOT/$RES/$NEBPAY/dist/nebPay.min.js $DIST/
+SED='s/<\/head>/<script type=\"text\/javascript\" src=\".\/dist\/nebulas.min.js\"><\/script>'
+SED+='<script type=\"text\/javascript\" src=\".\/dist\/nebPay.min.js\"><\/script>'
 SED+='<script type=\"text\/javascript\">'
 SED+='var HttpRequest = require(\"nebulas\").HttpRequest;var Neb = require(\"nebulas\").Neb;var Account = require(\"nebulas\").Account;var Transaction = require(\"nebulas\").Transaction;var Unit = require(\"nebulas\").Unit;var NebPay = require(\"nebpay\");'
 SED+='<\/script>'
