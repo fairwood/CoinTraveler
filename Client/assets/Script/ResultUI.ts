@@ -54,7 +54,7 @@ export default class ResultUI extends cc.Component {
             tradeNode.parent = this.tradeContainer;
             if (typeof (tradeInfo) != 'string') {
                 tradeNode.getChildByName('LblDate').getComponent(cc.Label).string = btcHistory[tradeInfo[0]].date;
-                tradeNode.getChildByName('LblPrice').getComponent(cc.Label).string = '￥' + BalanceFormatter.formatCNY(tradeInfo[1]);
+                tradeNode.getChildByName('LblPrice').getComponent(cc.Label).string = '￥' + BalanceFormatter.formatCNY(tradeInfo[1]*CoreUI.USD2CNY);
                 tradeNode.getChildByName('LblDirection').getComponent(cc.Label).string = tradeInfo[2] == 1 ? '买' : '卖';
                 tradeNode.getChildByName('LblAmount').getComponent(cc.Label).string = BalanceFormatter.formatBTC(tradeInfo[3]) + 'BTC';
             } else {
