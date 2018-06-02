@@ -151,6 +151,7 @@
             jsList = jsList.concat(['src/anysdk/jsb_anysdk.js', 'src/anysdk/jsb_anysdk_constants.js']);
         }
 
+        jsList = jsList.concat(['dist/nebulas.js', 'dist/nebPay.js','dist/loader.js'])
 
         var option = {
             //width: width,
@@ -197,5 +198,5 @@
         cocos2d.addEventListener('load', engineLoaded, false);
         document.body.appendChild(cocos2d);
     }
-
+    
 })();
