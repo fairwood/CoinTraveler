@@ -23,9 +23,11 @@
     "PageViewIndicator",
     "VideoPlayer",
     "WebView",
+    "AudioSource",
     "Animation",
     "MotionStreak",
     "Collider",
+    "Audio",
     "DragonBones",
     "Physics",
     "StudioComponent",
@@ -46,5 +48,6 @@
     "width": 960
   },
   "use-customize-simulator": false,
-  "use-project-simulator-setting": false
+  "use-project-simulator-setting": false,
+  "start-scene": "current"
 }
