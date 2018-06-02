@@ -62,7 +62,7 @@ export default class Leaderboard extends cc.Component {
         neb.api.call(from, ContractAddress, value, nonce, gas_price, gas_limit, contract).then(function (resp) {
             console.log('get_score_rankboard', resp)
             Leaderboard.scoreBoard = JSON.parse(resp.result).result_data;
-            self.switchTab(null, 'score');
+            self.switchTab(null, self.tab);
         }).catch(function (err) {
             console.log("error:" + err.message)
         })
@@ -75,7 +75,7 @@ export default class Leaderboard extends cc.Component {
         neb.api.call(from, ContractAddress, value, nonce, gas_price, gas_limit, contract).then(function (resp) {
             console.log('get_donation_rankboard', resp)
             Leaderboard.donationBoard = JSON.parse(resp.result).result_data;
-            self.switchTab(null, 'donation');
+            self.switchTab(null, self.tab);
         }).catch(function (err) {
             console.log("error:" + err.message)
         })
