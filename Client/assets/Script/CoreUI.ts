@@ -154,6 +154,7 @@ export class CoreUI extends cc.Component {
         this.currentSpeeder = 0;
         MainCtrl.Instance.lastTradeHistory = [];
         this.isRunning = true;
+        this.refreshBalance();
     }
 
     BuyAll() {
