@@ -5,8 +5,7 @@
   "excludeScenes": [
     "2d2f792f-a40c-49bb-a189-ed176a246e49"
   ],
-  "fb-instant-games": {},
-  "includeAnySDK": false,
+  "includeAnySDK": true,
   "includeSDKBox": false,
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
@@ -23,10 +22,6 @@
   },
   "packageName": "org.cocos2d.helloworld",
   "privateKey": "",
-  "qqplay": {
-    "REMOTE_SERVER_ROOT": "",
-    "orientation": "portrait"
-  },
   "renderMode": "0",
   "startScene": "0ea37364-5bb2-4f6c-8be6-fb815d226aa6",
   "title": "BTCTraveler",
