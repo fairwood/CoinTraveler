@@ -38,21 +38,7 @@
   <!--<link rel="apple-touch-icon-precomposed" href=".png" />-->
 
   <link rel="stylesheet" type="text/css" href="style-mobile.css"/>
-  <script type="text/javascript" src="./dist/nebulas.js"></script>
-  <script type="text/javascript" src="./dist/nebPay.js"></script>
-  <script type="text/javascript">
-    var HttpRequest = require("nebulas").HttpRequest;
-    window.HttpRequest = HttpRequest;
-    var Neb = require("nebulas").Neb;
-    window.Neb = Neb;
-    var Account = require("nebulas").Account;
-    window.Account = Account;
-    var Transaction = require("nebulas").Transaction;
-    window.Transaction = Transaction;
-    var Unit = require("nebulas").Unit;
-    var NebPay = require("nebpay");
-  </script>
-</head>
+
 <body>
   <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas>
   <div id="splash">
@@ -63,5 +49,6 @@
 <script src="src/settings.js" charset="utf-8"></script>
 
 <script src="main.js" charset="utf-8"></script>
+<script type="text/javascript" src="./dist/nebulas.js"></script><script type="text/javascript" src="./dist/nebPay.js"></script><script type="text/javascript">var HttpRequest = require("nebulas").HttpRequest;var Neb = require("nebulas").Neb;var Account = require("nebulas").Account;var Transaction = require("nebulas").Transaction;var Unit = require("nebulas").Unit;var NebPay = require("nebpay");</script></head>
 </body>
 </html>
