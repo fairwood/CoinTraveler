@@ -198,5 +198,5 @@
         cocos2d.addEventListener('load', engineLoaded, false);
         document.body.appendChild(cocos2d);
     }
-    
+
 })();
