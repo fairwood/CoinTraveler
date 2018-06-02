@@ -34,5 +34,10 @@
     "subContext": ""
   },
   "xxteaKey": "79bbd669-1c9d-4c",
-  "zipCompressJs": true
+  "zipCompressJs": true,
+  "qqplay": {
+    "orientation": "portrait",
+    "REMOTE_SERVER_ROOT": ""
+  },
+  "fb-instant-games": {}
 }

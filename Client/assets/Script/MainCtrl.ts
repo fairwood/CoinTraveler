@@ -58,6 +58,11 @@ export class MainCtrl extends cc.Component {
         });
         this.HomeUI.active = true;
 
+        let as = this.node.getChildByName('AudioSource').getComponent(cc.AudioSource);
+        setTimeout(() => { as.play(); }, 1000);
+        // cc.loader.load(cc.url.raw('resources/bgm.mp3'), function(){
+
+        // });
     }
 
     nebState;
