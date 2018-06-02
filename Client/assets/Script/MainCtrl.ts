@@ -6,7 +6,7 @@ declare var Neb: any;
 declare var NebPay: any;
 declare var Account: any;
 declare var HttpRequest: any;
-export const ContractAddress = 'n1vpuzJZ27vfYnFRBiQCsHVn4KW4jS7ndNi';
+export const ContractAddress = 'n1vMo7fEcQ18gLDAq8GutcgoyXUyEGDFtQm';
 export const EncKey = 37234;
 
 @ccclass
@@ -23,6 +23,8 @@ export class MainCtrl extends cc.Component {
     lastTradeHistory = [];
 
     @property(cc.Node)
+    UIContainer: cc.Node = null;
+    @property(cc.Node)
     HomeUI: cc.Node = null;
     @property(cc.Node)
     CoreUI: cc.Node = null;
@@ -37,7 +39,7 @@ export class MainCtrl extends cc.Component {
         MainCtrl.Instance = this;
         document.title = "NAS|币圈穿越记";
 
-        MainCtrl.BlockchainUrl = 'https://testnet.nebulas.io'; //NebPay.config.testnetUrl;这个好像不对啊 //NebPay.config.mainnetUrl
+        MainCtrl.BlockchainUrl = 'https://mainnet.nebulas.io'; // 'https://testnet.nebulas.io'; //NebPay.config.testnetUrl;这个好像不对啊 //NebPay.config.mainnetUrl
         console.log('BlockchainUrl', MainCtrl.BlockchainUrl);
 
         //加载历史价格数据
@@ -51,7 +53,7 @@ export class MainCtrl extends cc.Component {
 
     start() {
 
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.HomeUI.active = true;
@@ -91,7 +93,7 @@ export class MainCtrl extends cc.Component {
     }
 
     OnBtnStartClick() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.CoreUI.active = true;
@@ -99,32 +101,32 @@ export class MainCtrl extends cc.Component {
     }
 
     GotoResult() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.ResultUI.active = true;
     }
     GotoLeaderboard() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.LeaderboardUI.active = true;
     }
     GotoDonate() {
         this.lastScore = 0;
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.UploadUI.active = true;
     }
     GotoUpload() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.UploadUI.active = true;
     }
     GotoHome() {
-        this.node.children.forEach((c) => {
+        this.UIContainer.children.forEach((c) => {
             c.active = false;
         });
         this.HomeUI.active = true;

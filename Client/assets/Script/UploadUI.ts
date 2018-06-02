@@ -25,7 +25,7 @@ export default class UploadUI extends cc.Component {
     onEnable() {
         let btc = MainCtrl.Instance.lastScore;
         if (btc) {
-            this.lblTotalBTC.string = BalanceFormatter.formatBTC(btc) + "BTC";
+            this.lblTotalBTC.string = BalanceFormatter.formatBTC(btc);
             this.grpWithScore.active = true;
             this.grpNoScore.active = false;
             this.lblSend.string = '上传到时间机器';
@@ -33,6 +33,14 @@ export default class UploadUI extends cc.Component {
             this.grpWithScore.active = false;
             this.grpNoScore.active = true;
             this.lblSend.string = '发送捐赠';
+        }
+    }
+
+    onBackBtnClick() {
+        if (MainCtrl.Instance.lastScore > 0.00000001) {
+            MainCtrl.Instance.GotoResult();
+        } else {
+            MainCtrl.Instance.GotoHome();
         }
     }
 
