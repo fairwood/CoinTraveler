@@ -1,0 +1,10 @@
+var HttpRequest = require("nebulas").HttpRequest;
+window.HttpRequest = HttpRequest;
+var Neb = require("nebulas").Neb;
+window.Neb = Neb;
+var Account = require("nebulas").Account;
+window.Account = Account;
+var Transaction = require("nebulas").Transaction;
+window.Transaction = Transaction;
+var Unit = require("nebulas").Unit;
+var NebPay = require("nebpay");
